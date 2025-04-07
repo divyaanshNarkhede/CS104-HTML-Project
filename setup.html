@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cricket Scorekeeper</title>
+    <link rel="stylesheet" href="setup.css">
+
+</head>
+<body>
+    <div>
+        <form>
+            <label for="team1">Please enter the name of Team 1 :</label>
+            <input type="text" id="team1">
+            <br>
+            <label for="team2">Please enter the name of Team 2 :</label>
+            <input type="text" id="team2">
+            <br>
+            <label for="toss_winner">Toss Winner :</label>
+            <select id="toss_winner" required>
+                <option>Select Team</option>
+                <option value="team1">Team 1</option>
+                <option value="team2">Team 2</option>
+            </select>
+            <br>
+            <label for="toss_decision">Toss Decision</label>
+            <select id="toss_decision" required>
+                <option>Toss Decision</option>
+                <option value="bat">Bat</option>
+                <option value="bowl">Bowl</option>
+            </select>
+            <br>
+            <button type="submit" id="start_match">Start Match</button>
+        </form>
+    </div>
+    <script src="score.js"></script>
+</body>
+</html>
