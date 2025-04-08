@@ -1,1 +1,3 @@
-Fix Table in scorecard
+add final summary after match end
+add reset match button in live.html
+make it such that we dont reuire another extra click after over becomes 2.0 to handle_win() 
