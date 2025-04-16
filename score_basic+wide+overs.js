@@ -149,7 +149,7 @@ if (window.location.href.includes('live.html')) {
 
     function update_batter_stats(name, runs_scored, is_out = false,newb=false,extra_balls=0) {
         if (!batters[name]) {
-            batters[name] = { runs: 0, balls: 0, fours: 0, sixes: 0, out: false, newb: true, extras: 0, inning: 0,};
+            batters[name] = { runs: 0, balls: 0, fours: 0, sixes: 0, out: false, newb: true, extras: 0,};
         }
         batters[name].runs += runs_scored;
         if(!batters[name].newb){
@@ -162,12 +162,11 @@ if (window.location.href.includes('live.html')) {
         if (runs_scored === 6) batters[name].sixes += 1;
         if (is_out) batters[name].out = true;
         if(extra_balls!=0) {batters[name].extras+=extra_balls;}
-        batters[name].inning=total_inning;
     }
 
     function update_bowler_stats(name, runs_conceded, took_wicket = false,extras=false) {
         if (!bowlers[name]) {
-            bowlers[name] = { balls: 0, runs: 0, wickets: 0, maidens: 0, maiden_balls: 0,inning: 0, };
+            bowlers[name] = { balls: 0, runs: 0, wickets: 0, maidens: 0, maiden_balls: 0, };
         }
         if(!extras){bowlers[name].balls += 1;}
         bowlers[name].runs += runs_conceded;
@@ -182,7 +181,6 @@ if (window.location.href.includes('live.html')) {
             bowlers[name].maidens += 1;
             bowlers[name].maiden_balls = 0; // Reset maiden balls after a maiden over
         }
-        bowlers[name].inning=total_inning;
 
     }
 
@@ -191,7 +189,6 @@ if (window.location.href.includes('live.html')) {
         localStorage.setItem("bowlers", JSON.stringify(bowlers));
         localStorage.setItem("team1", team1_name);
         localStorage.setItem("team2", team2_name);
-        localStorage.setItem("total_inning",total_inning);
     }
 
     function update_score_display() {
@@ -242,7 +239,6 @@ if (window.location.href.includes('live.html')) {
                 update_bowler_stats(bowler, 1,false,true);
                 wide = false;
                 update_batter_stats(strike_batter,run,wicket,false,1);
-                save_scorecard_to_storage();
                 save_match_state();
                 update_display();
                 update_score_display();
@@ -291,7 +287,6 @@ if (window.location.href.includes('live.html')) {
             }
         }
         wicket=false;
-        save_scorecard_to_storage();
         save_match_state();
         update_display();
         update_score_display();
@@ -315,7 +310,6 @@ if (window.location.href.includes('live.html')) {
                 update_display();
             },100);
             second_innings_started = true;
-            save_scorecard_to_storage();
             save_match_state();
             update_display();
             update_score_display();
@@ -350,7 +344,6 @@ if (window.location.href.includes('live.html')) {
             //     update_score_display();
             //     return;
             // }
-            save_scorecard_to_storage();
             update_score_display();
             handle_balls();
 
@@ -434,29 +427,23 @@ if (window.location.href.includes("scorecard.html")) {
     }
     const batters_data = JSON.parse(localStorage.getItem("batters") || "{}");
     const bowlers_data = JSON.parse(localStorage.getItem("bowlers") || "{}");
-    // const team1 = localStorage.getItem("team1");
-    // const team2 = localStorage.getItem("team2");
-    const total_inning = localStorage.getItem("total_inning");
+    const team1 = localStorage.getItem("team1");
+    const team2 = localStorage.getItem("team2");
 
-    let batting_table_inning1 = document.getElementById("batting_table_inning1");
-    let batting_table_inning2 = document.getElementById("batting_table_inning2");
+    const batting_table = document.getElementById("batting_table");
     Object.entries(batters_data).forEach(([name, stats]) => {
         const row = document.createElement("tr");
         row.innerHTML = `<td>${name}</td> <td>${stats.runs}</td> <td>${stats.balls}</td> <td>${stats.fours}</td> <td>${stats.sixes}</td> <td></td> <td>${stats.extras}</td> <td>${stats.out ? 'Out' : 'Not Out'}</td>`;
-        if(stats.inning==1) {batting_table_inning1.appendChild(row);}
-        else if(stats.inning==2) {batting_table_inning2.appendChild(row);}
-        
+        batting_table.appendChild(row);
     });
 
-    let bowling_table_inning1 = document.getElementById("bowling_table_inning1");
-    let bowling_table_inning2 = document.getElementById("bowling_table_inning2");
+    const bowling_table = document.getElementById("bowling_table");
     Object.entries(bowlers_data).forEach(([name, stats]) => {
         const row = document.createElement("tr");
         const overs = `${Math.floor(stats.balls / 6)}.${stats.balls % 6}`;
         const economy = stats.runs*6/stats.balls;
         row.innerHTML = `<td>${name}</td> <td>${overs}</td> <td>${stats.runs}</td> <td>${stats.wickets}</td> <td>${stats.maidens}</td> <td>${economy}</td>`;
-        if(stats.inning==1) {bowling_table_inning1.appendChild(row);}
-        else if(stats.inning==2) {bowling_table_inning2.appendChild(row);}
+        bowling_table.appendChild(row);
     });
 
     document.getElementById("back_to_live").addEventListener('click', ()=>{
@@ -467,20 +454,7 @@ if (window.location.href.includes("scorecard.html")) {
     document.getElementById("back_to_summary").addEventListener('click', ()=>{
         window.location.href = "summary.html";
     });
-    
-    if(total_inning==1) {
-        batting_table_inning2.style.display="none";
-        bowling_table_inning2.style.display="none";
-        document.getElementById("batting_heading_inning2").style.display="none";
-        document.getElementById("bowling_heading_inning2").style.display="none";
-    }
 
-    else if(total_inning==2) {
-        batting_table_inning2.style.display="block";
-        bowling_table_inning2.style.display="block";
-        document.getElementById("batting_heading_inning2").style.display="block";
-        document.getElementById("bowling_heading_inning2").style.display="block";
-    }
 }
 
 if (window.location.href.includes("summary.html")) {

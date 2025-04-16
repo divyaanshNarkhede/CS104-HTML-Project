@@ -1,2 +1,0 @@
-add final summary after match end
-make it such that we dont reuire another extra click after over becomes 2.0 to handle_win() 
