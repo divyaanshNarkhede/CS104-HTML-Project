@@ -68,7 +68,8 @@ body {
 
 button[id^="run_"],
 #wide,
-#wicket {
+#wicket,
+#no_ball {
     background-color: #ffffff;
     border: 1px solid #009270;
     color: #009270;
@@ -82,7 +83,8 @@ button[id^="run_"],
 
 button[id^="run_"]:hover,
 #wide:hover,
-#wicket:hover {
+#wicket:hover,
+#no_ball:hover {
     background-color: #009270;
     color: white;
 }
@@ -141,5 +143,13 @@ button[id^="toggle_live_commentary"]:hover {
 #live_commentary.show {
     opacity: 1;
     visibility: visible;
+}
+
+.overs_display{
+    color: #009270;
+}
+
+.regular {
+    color: #a0a0a0;
 }
 

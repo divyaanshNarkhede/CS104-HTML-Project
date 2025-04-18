@@ -55,3 +55,11 @@ button:hover {
     opacity: 1;
     visibility: visible;
 }
+
+.overs_display{
+    color: #009270;
+}
+
+.regular {
+    color: #a0a0a0;
+}
