@@ -7,6 +7,7 @@
 </head>
 <body>
     <div>
+        <img id="title_image" src="images/Howzatt.png" alt="Howzatt! Cricket Scorekeeper">
         <form>
             <label for="team1">Please enter the name of Team 1 :</label>
             <input type="text" id="team1">
@@ -14,24 +15,24 @@
             <label for="team2">Please enter the name of Team 2 :</label>
             <input type="text" id="team2">
             <br>
+            <label>
+                Number Of Overs:
+                <input type="text" id="num_overs" name="num_overs" />
+            </label>
+            <br>
             <label for="toss_winner">Toss Winner :</label>
             <select id="toss_winner" required>
-                <option>Select Team</option>
+                <option>-- Select Team --</option>
                 <option value="team1">Team 1</option>
                 <option value="team2">Team 2</option>
             </select>
             <br>
             <label for="toss_decision">Toss Decision</label>
             <select id="toss_decision" required>
-                <option>Toss Decision</option>
+                <option>-- Toss Decision --</option>
                 <option value="bat">Bat</option>
                 <option value="bowl">Bowl</option>
             </select>
-            <br>
-            <label>
-                Number Of Overs:
-                <input type="text" id="num_overs" name="num_overs" />
-            </label>
             <br>
             <button type="submit" id="start_match">Start Match</button>
         </form>

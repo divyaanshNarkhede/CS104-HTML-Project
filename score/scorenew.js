@@ -82,7 +82,7 @@ if (window.location.href.includes('live.html')) {
         second_innings_started = state.second_innings_started;
         prev_wickets=state.prev_wickets;
         required_runs=state.required_runs;
-        document.getElementById("live_commentary").innerHTML = state.commentary_content || "";
+
         update_display();
         update_score_display();
     }
@@ -104,23 +104,28 @@ if (window.location.href.includes('live.html')) {
         run = 0;
         if (total_inning == 1) { handle_inning_1(); }
         else if (total_inning == 2) { handle_inning_2(); handle_win(); }
+        update_live_commentary();
         run=0;
     });
     document.getElementById('run_1').addEventListener('click', function() {
         run = 1;
         if (total_inning == 1) { handle_inning_1(); }
         else if (total_inning == 2) { handle_inning_2(); handle_win(); }
+        update_live_commentary();
         run=0;
     });
     document.getElementById('run_2').addEventListener('click', function() {
         run = 2;
         if (total_inning == 1) { handle_inning_1(); }
+        else if (total_inning == 2) { handle_inning_2(); handle_win(); }
+        update_live_commentary();
         run=0;
     });
     document.getElementById('run_3').addEventListener('click', function() {
         run = 3;
         if (total_inning == 1) { handle_inning_1(); }
         else if (total_inning == 2) { handle_inning_2(); handle_win(); }
+        update_live_commentary();
         run=0;
     });
     document.getElementById('run_4').addEventListener('click', function() {
@@ -132,6 +137,7 @@ if (window.location.href.includes('live.html')) {
         setTimeout(function() {
             four_image.style.display = 'none';
         }, 1200);
+        update_live_commentary();
         run=0;
     });
     document.getElementById('run_6').addEventListener('click', function() {
@@ -143,12 +149,14 @@ if (window.location.href.includes('live.html')) {
         setTimeout(function() {
             six_image.style.display = 'none';
         }, 1200);
+        update_live_commentary();
         run=0;
     });
     document.getElementById('wide').addEventListener('click', function() {
         wide=true;
         if (total_inning == 1) { handle_inning_1(); }
         else if (total_inning == 2) { handle_inning_2(); handle_win(); }
+        update_live_commentary();
         run=0;
         wicket=0;
         wide=0;
@@ -157,6 +165,7 @@ if (window.location.href.includes('live.html')) {
         wicket = true;
         if (total_inning == 1) { handle_inning_1(); }
         else if (total_inning == 2) { handle_inning_2(); handle_win(); }
+        update_live_commentary();
         run=0;
         wicket=0;
         wide=0;
@@ -224,12 +233,10 @@ if (window.location.href.includes('live.html')) {
         if (total_inning == 1) {
             if ((toss_winner == team1_name && toss_decision == 'bat') || (toss_winner == team2_name && toss_decision == 'bowl')) {
                 document.getElementById('overall_scores').innerText = `${team1_name} ${total_runs}/${total_wickets} (${Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10}) vs. ${team2_name}`;
-            } 
-            else if ((toss_winner == team1_name && toss_decision == 'bowl') || (toss_winner == team2_name && toss_decision == 'bat')) {
+            } else if ((toss_winner == team1_name && toss_decision == 'bowl') || (toss_winner == team2_name && toss_decision == 'bat')) {
                 document.getElementById('overall_scores').innerText = `${team2_name} ${total_runs}/${total_wickets} (${Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10}) vs. ${team1_name}`;
             }
-        } 
-        else if (total_inning == 2) {
+        } else if (total_inning == 2) {
             let current_run_rate = balls_bowled > 0 ? (total_runs / (balls_bowled / 6)).toFixed(2) : 0;
             let remaining_overs = (6 * OVERS - balls_bowled) / 6;
             let required_run_rate = remaining_overs > 0 ? ((required_runs - total_runs) / remaining_overs).toFixed(2) : 0;
@@ -245,7 +252,6 @@ if (window.location.href.includes('live.html')) {
     }
 
     function save_match_state() {
-        const commentary_content = document.getElementById("live_commentary").innerHTML;
         localStorage.setItem("match_state", JSON.stringify({
             total_runs,
             total_wickets,
@@ -259,7 +265,6 @@ if (window.location.href.includes('live.html')) {
             second_innings_started,
             batters,
             bowlers,
-            commentary_content
         }));
     }
 
@@ -326,7 +331,6 @@ if (window.location.href.includes('live.html')) {
             }
         }
         // wicket=false;
-        update_live_commentary();
         save_scorecard_to_storage();
         save_match_state();
         update_display();
@@ -338,8 +342,8 @@ if (window.location.href.includes('live.html')) {
             total_runs = 0;
             prev_wickets = total_wickets;
             total_wickets = 0;
+            balls_bowled = 0;
             second_innings_started = false;
-            
             setTimeout(() => {
                 alert("End of inning 1. Start of inning 2.");
                 strike_batter = prompt("Please enter the name of strike batter:") || "Player2 1";
@@ -355,11 +359,6 @@ if (window.location.href.includes('live.html')) {
             save_match_state();
             update_display();
             update_score_display();
-            setTimeout(() => {
-                live_commentary=document.getElementById("live_commentary");
-                live_commentary.innerHTML += `Inning 1 End<br>`;
-                balls_bowled = 0;
-            },100);
             return;
         }
         
@@ -417,40 +416,47 @@ if (window.location.href.includes('live.html')) {
             let first_batting_team = (toss_winner == team1_name && toss_decision == 'bat') || (toss_winner == team2_name && toss_decision == 'bowl') ? team1_name : team2_name;
             let second_batting_team = first_batting_team == team1_name ? team2_name : team1_name;
 
-            setTimeout (() => {
-                if ((balls_bowled == 6 * OVERS && total_runs < required_runs) || total_wickets == 10) {
-                    won_team = first_batting_team;
-                    lose_team = second_batting_team;
-                    type = 1;
+            if ((balls_bowled == 6 * OVERS && total_runs < required_runs) || total_wickets == 10) {
+                won_team = first_batting_team;
+                lose_team = second_batting_team;
+                type = 1;
+                update_display();
+                setTimeout(() => {
+                    alert(`${won_team} wins the match!`);
                     update_display();
-                } 
-                else if (total_runs >= required_runs) {
-                    won_team = second_batting_team;
-                    lose_team = first_batting_team;
-                    type = 2;
+                },100);
+                
+            } 
+            else if (total_runs >= required_runs) {
+                won_team = second_batting_team;
+                lose_team = first_batting_team;
+                type = 2;
+                update_display();
+                setTimeout(() => {
+                    alert(`${won_team} wins the match!`);
                     update_display();
-                } 
-                else if (balls_bowled == 6 * OVERS && total_runs == required_runs) {
-                    won_team = "tie";
-                    type = 3;
+                },100);
+            } 
+            else if (balls_bowled == 6 * OVERS && total_runs == required_runs) {
+                won_team = "tie";
+                type = 3;
+                update_display();
+                setTimeout(() => {
+                    alert("Match ends in a tie!");
                     update_display();
-                    
-                }
-                if (won_team !== null && type !== null) {
-                    update_live_commentary();
-                    localStorage.setItem("won_team", won_team);
-                    localStorage.setItem("type", type);
-                    save_scorecard_to_storage();
-                    setTimeout(() => {
-                        window.location.href = "summary.html";
-                    }, 500);
-                }
-            },200);
-        }  
+                },100);
+                
+            }
+            if (won_team !== null && type !== null) {
+                localStorage.setItem("won_team", won_team);
+                localStorage.setItem("type", type);
+                save_scorecard_to_storage();
+                window.location.href = "summary.html";
+            }
+        }
     }
 
     function update_live_commentary() {
-        // console.log(balls_bowled);
         live_commentary=document.getElementById("live_commentary");
         if(!wicket && !wide){
             live_commentary.innerHTML += `${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)} ${bowler} to ${strike_batter}, ${run} runs<br>`;
@@ -576,14 +582,6 @@ if (window.location.href.includes("summary.html")) {
 
     document.getElementById("reset_match").addEventListener('click', function(){
         window.location.href = "setup.html";
-    });
-
-    document.getElementById("view_commentary").addEventListener('click', function(){
-        let saved_state = localStorage.getItem("match_state");
-        let state = JSON.parse(saved_state);
-        document.getElementById("done_commentary").innerHTML = state.commentary_content || "";
-        done_commentary.classList.toggle("show");
-
     });
 }
 

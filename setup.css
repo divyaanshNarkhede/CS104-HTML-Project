@@ -1,0 +1,66 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+div {
+    max-width: 500px;
+    margin: 80px auto;
+    background-color: #ffffff;
+    padding: 30px 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+label {
+    display: block;
+    margin: 15px 0 5px;
+    font-size: 15px;
+    color: #222;
+    font-weight: 500;
+}
+
+input[type="text"],
+select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+    color: #333;
+    background-color: rgba(0, 146, 112, 0.1); /* Very faint green with low opacity */
+    box-sizing: border-box;
+    transition: border-color 0.3s, background-color 0.3s;
+}
+input[type="text"]:focus,
+select:focus {
+    border-color: #009270;
+    outline: none;
+}
+
+button {
+    margin-top: 20px;
+    padding: 10px 18px;
+    background-color: #009270;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+button:hover {
+    background-color: #007c5e;
+}
+
+#title_image {
+    width: 150px;
+    padding-left: 175px;
+}

@@ -1,0 +1,145 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f5f5f5;
+    color: #222;
+    padding: 40px 20px;
+}
+
+#go_to_scorecard {
+    display: block;
+    background-color: #009270;
+    color: white;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 5px;
+    font-size: 15px;
+    cursor: pointer;
+    margin-bottom: 30px;
+    transition: background 0.3s ease;
+}
+
+#go_to_scorecard:hover {
+    background-color: #007c5e;
+}
+
+.flex_scores {
+    display: flex;
+    flex-direction: row;
+}
+
+#loading_image {
+    height: 12px;
+    padding-left: 15px;
+    padding-bottom: 2px;
+}
+
+#overall_scores {
+    display: inline;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+#run_rates {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+#strike_batter,
+#non_strike_batter,
+#current_bowler {
+    font-size: 16px;
+    margin: 8px 0;
+    font-weight: 500;
+}
+
+#batter_table,
+#baller_table {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+button[id^="run_"],
+#wide,
+#wicket {
+    background-color: #ffffff;
+    border: 1px solid #009270;
+    color: #009270;
+    font-weight: 500;
+    padding: 8px 14px;
+    margin: 5px 4px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+button[id^="run_"]:hover,
+#wide:hover,
+#wicket:hover {
+    background-color: #009270;
+    color: white;
+}
+
+#names {
+    margin-top: 30px;
+    font-size: 14px;
+    color: #444;
+}
+
+#four_image,
+#six_image,
+#out_image {
+    display: none;
+    padding-left: 50px;
+    width: 70px;
+    align-self: left;
+}
+
+button[id^="toggle_live_commentary"] {
+    display: block;
+    background-color: #009270;
+    color: white;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 5px;
+    font-size: 15px;
+    cursor: pointer;
+    margin-bottom: 30px;
+    transition: background 0.3s ease;
+}
+
+button[id^="toggle_live_commentary"]:hover {
+    background-color: #007c5e;
+}
+
+#live_commentary {
+    background-color: #ffffff;
+    border-left: 5px solid #009270;
+    padding: 16px 20px;
+    margin-top: 20px;
+    border-radius: 6px;
+    font-size: 14.5px;
+    font-family: 'Roboto Mono', monospace;
+    max-height: 250px;
+    overflow-y: auto;
+    white-space: pre-line;
+    line-height: 1.6;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    color: #333;
+}
+
+#live_commentary.show {
+    opacity: 1;
+    visibility: visible;
+}
+
