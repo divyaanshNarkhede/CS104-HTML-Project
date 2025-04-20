@@ -227,6 +227,10 @@ if (window.location.href.includes('live.html')) {
 
     function update_score_display() {
         if (total_inning == 1) {
+            let current_run_rate=0;
+            if(prev_wide){current_run_rate = balls_bowled > 0 ? (total_runs / ((balls_bowled-1) / 6)).toFixed(2) : 0;}
+            else {current_run_rate = balls_bowled > 0 ? (total_runs / (balls_bowled / 6)).toFixed(2) : 0;}
+            document.getElementById('run_rates').innerHTML = `Current Run Rate: ${current_run_rate}<br>`;
             if ((toss_winner == team1_name && toss_decision == 'bat') || (toss_winner == team2_name && toss_decision == 'bowl')) {
                 document.getElementById('overall_scores').innerText = `${team1_name} ${total_runs}/${total_wickets} (${Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10}) vs. ${team2_name}`;
             } 
@@ -248,7 +252,7 @@ if (window.location.href.includes('live.html')) {
                 required_run_rate = ((required_runs - total_runs) / (OVERS-((balls_bowled)/6))).toFixed(2);
             }
 
-            document.getElementById('run_rates').innerText = `Current Run Rate: ${current_run_rate}     Required Run Rate: ${required_run_rate}`;
+            document.getElementById('run_rates').innerHTML = `Current Run Rate: ${current_run_rate}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Required Run Rate: ${required_run_rate}<br>`;
 
             if ((toss_winner == team1_name && toss_decision == 'bat') || (toss_winner == team2_name && toss_decision == 'bowl')) {
                 document.getElementById('overall_scores').innerText = `${team2_name} ${total_runs}/${total_wickets} (${Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10}) vs. ${team1_name} ${required_runs - 1}/${prev_wickets} (${OVERS}.0)`;
@@ -398,7 +402,7 @@ if (window.location.href.includes('live.html')) {
             update_score_display();
             setTimeout(() => {
                 live_commentary=document.getElementById("live_commentary");
-                live_commentary.innerHTML += `Inning 1 End<br>`;
+                live_commentary.innerHTML += `---- Inning 1 End ----<br>`;
             },100);
             balls_bowled=0;
             return;
@@ -486,7 +490,7 @@ if (window.location.href.includes('live.html')) {
                     save_scorecard_to_storage();
                     setTimeout(() => {
                         window.location.href = "summary.html";
-                    }, 500);
+                    }, 200);
                 }
             },200);
         }  
@@ -500,10 +504,10 @@ if (window.location.href.includes('live.html')) {
             live_commentary.innerHTML += `<span class="overs_display">${over_count}</span> ${bowler} <span class="regular">to</span> ${strike_batter}<span class="regular">,</span> Wide (+1 extra)<br>`;
         }
         else if(!wicket && !wide){
-            live_commentary.innerHTML += `<span class="overs_display">${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)}</span> ${bowler} <span class="regular">to</span> ${prev_batter}<span class="regular">,</span> ${run} runs<br>`;
+            live_commentary.innerHTML += `<span class="overs_display">${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)}</span> ${bowler} <span class="regular">to</span> ${prev_batter}<span class="regular">,</span> ${run} runs  &#127951;<br>`;
         }
         else if(wicket && !wide){
-            live_commentary.innerHTML += `<span class="overs_display">${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)}</span> ${bowler} <span class="regular">to</span> ${prev_batter}<span class="regular">,</span> Wicket<br>`;
+            live_commentary.innerHTML += `<span class="overs_display">${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)}</span> ${bowler} <span class="regular">to</span> ${prev_batter}<span class="regular">,</span> Wicket   &#129358;<br>`;
         }
         // else if(!wicket && wide){
         //     live_commentary.innerHTML += `<span class="overs_display">${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)}</span> ${bowler} <span class="regular">to</span> ${strike_batter}<span class="regular">,</span> Wide<br>`;
@@ -607,14 +611,17 @@ if (window.location.href.includes("summary.html")) {
         const required_runs = matchState?.required_runs;
         const total_runs = matchState?.total_runs;
         win_runs=required_runs-total_runs-1;
-        document.getElementById("win").innerText=`${won_team} wins by ${win_runs} runs!`;
+        document.getElementById("win").innerHTML=`<span class="win_imp">${won_team}</span> wins by <span class="win_imp">${win_runs}</span> runs!`;
     }
-    if(type==2) {
+    else if(type==2) {
         const total_wickets = matchState?.total_wickets;
         let req_wickets=10-total_wickets;
         const balls_bowled=matchState?.balls_bowled;
         let req_balls=6*OVERS-balls_bowled;
-        document.getElementById("win").innerText=`${won_team} wins by ${req_wickets} wickets ! ( ${req_balls} balls left )`;
+        document.getElementById("win").innerHTML=`<span class="win_imp">${won_team}</span> wins by <span class="win_imp">${req_wickets}</span> wickets ! ( <span class="wim+imp">${req_balls}</span> balls left )`;
+    }
+    else if(type==3) {
+        document.getElementById("win").innerHTML=`Match end in a tie`;
     }
 
     document.getElementById("go_to_scorecard_from_summary").addEventListener('click', function(){
@@ -625,10 +632,12 @@ if (window.location.href.includes("summary.html")) {
         window.location.href = "setup.html";
     });
 
+    let saved_state = localStorage.getItem("match_state");
+    let state = JSON.parse(saved_state);
+    document.getElementById("done_commentary").innerHTML = state.commentary_content || "";
+    done_commentary.innerHTML += `---- Match End ----`;
+
     document.getElementById("view_commentary").addEventListener('click', function(){
-        let saved_state = localStorage.getItem("match_state");
-        let state = JSON.parse(saved_state);
-        document.getElementById("done_commentary").innerHTML = state.commentary_content || "";
         done_commentary.classList.toggle("show");
 
     });
