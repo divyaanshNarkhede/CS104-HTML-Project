@@ -26,6 +26,7 @@ label {
 }
 
 input[type="text"],
+input[type="number"],
 select {
     width: 100%;
     padding: 12px;
@@ -33,11 +34,12 @@ select {
     border-radius: 8px;
     font-size: 15px;
     color: #333;
-    background-color: rgba(0, 146, 112, 0.1); /* Very faint green with low opacity */
+    background-color: rgba(0, 146, 112, 0.1);
     box-sizing: border-box;
     transition: border-color 0.3s, background-color 0.3s;
 }
 input[type="text"]:focus,
+input[type="number"]:focus,
 select:focus {
     border-color: #009270;
     outline: none;

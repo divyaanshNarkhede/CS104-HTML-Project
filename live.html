@@ -6,38 +6,59 @@
     </head>
     <body>
         <button id="go_to_scorecard">View Scorecard</button>
-        <p id="overall_scores"></p>
-        <img src="images/loading.gif" id="loading_image">
+        <div id="top">
+            <p id="overall_scores"></p>
+            <img src="images/loading.gif" id="loading_image">
+        </div>
         <p id="run_rates"></p>
+        <div id="last_wicket"></div>
         <div class="flex_scores">
-            <div>
+            <div class="player_section">
                 <p id="strike_batter"></p>
 
                 <p id="non_strike_batter"></p>
 
                 <p id="current_bowler"></p>
             </div>
-            <div>
+            <div class="score_images">
                 <img id="four_image" src="images/4.png" alt="Four runs!">
                 <img id="six_image" src="images/6.png" alt="Six runs!">
             </div>
         </div>
         <br>
-        <button id="run_0">0 Runs</button>
-        <button id="run_1">1 Runs</button>
-        <button id="run_2">2 Runs</button>
-        <button id="run_3">3 Runs</button>
-        <button id="run_4">4 Runs</button>
-        <button id="run_6">6 Runs</button>
-        <button id="wide">Wide</button>
-        <button id="no_ball">No Ball</button>
-        <!-- <button id="no_ball">No Ball</button> -->
-        <button id="wicket">Wicket</button>
-        <!-- <button id="run_out">Run Out</button> -->
+        <h2 id="batting_heading_current">Current Batting Stats</h2>
+        <table id="batting_table_current">
+            <thead>
+                <tr>
+                    <th>Player</th><th>Runs</th><th>Balls</th><th>4s</th><th>6s</th><th>Strike Rate</th> <th>Extras</th> <th>Status</th>
+                </tr>
+            </thead>
+        </table>
+        <h2 id="bowling_heading_current">Current Bowling Stats</h2>
+            <table id="bowling_table_current">
+                <thead>
+                    <tr>
+                        <th>Bowler</th><th>Overs</th><th>Runs Conceded</th><th>Wickets</th><th>Maidens</th><th>Economy</th>
+                    </tr>
+                </thead>
+            </table>
+        <br>
+        <div class="buttons">
+            <button id="run_0">0 Runs</button>
+            <button id="run_1">1 Runs</button>
+            <button id="run_2">2 Runs</button>
+            <button id="run_3">3 Runs</button>
+            <button id="run_4">4 Runs</button>
+            <button id="run_6">6 Runs</button>
+            <button id="byes">Byes</button>
+            <button id="wide">Wide</button>
+            <button id="no_ball">No Ball</button>
+            <button id="wicket">Wicket</button>
+        </div>
         <br>
         <br>
         <button id="toggle_live_commentary">Toggle Live Commentary</button>
-        <p id="live_commentary"></p>
+        <div id="live_commentary"></div>
 
         <script src="score.js"></script>
     </body>
