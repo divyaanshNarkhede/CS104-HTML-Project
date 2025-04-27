@@ -535,8 +535,6 @@ if (window.location.href.includes('live.html')) {
                 }, 100);
             }
             prev_wide=false;
-            free_hit = false;
-            document.getElementById("wicket").style.display = "inline";
         }
         else if(!wide && !wicket && !byes){
                 if(!prev_wide) balls_bowled++;
@@ -756,10 +754,12 @@ if (window.location.href.includes('live.html')) {
         }
         else if(!wicket && !wide && !no_ball && !free_hit && byes){
             live_commentary.innerHTML += `<span class="overs_display">${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)}</span> ${bowler} <span class="regular">to</span> ${prev_batter}<span class="regular">,</span> ${run} runs (Byes)  &#127951;<br>`;
+            byes=false;
         }
         else if(!wicket && !wide && !no_ball && free_hit && byes){
             live_commentary.innerHTML += `<span class="overs_display">${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)}</span> ${bowler} <span class="regular">to</span> ${prev_batter}<span class="regular">,</span> ${run} runs (Byes) (Free Hit)  &#127951;<br>`;
             free_hit=false;
+            document.getElementById("wicket").style.display = "inline";
         }
         // else if(!wicket && wide){
         //     live_commentary.innerHTML += `<span class="overs_display">${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)}</span> ${bowler} <span class="regular">to</span> ${strike_batter}<span class="regular">,</span> Wide<br>`;

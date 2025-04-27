@@ -15,7 +15,6 @@ button {
     border: none;
     border-radius: 6px;
     font-size: 16px;
-    font-weight: 500;
     margin: 10px;
     cursor: pointer;
     transition: background-color 0.3s ease;
@@ -44,7 +43,7 @@ button:hover {
     border-radius: 6px;
     font-size: 14.5px;
     font-family: 'Roboto Mono', monospace;
-    max-height: 250px;
+    max-height: 400px;
     overflow-y: auto;
     white-space: pre-line;
     line-height: 1.6;
