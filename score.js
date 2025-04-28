@@ -219,6 +219,10 @@ if (window.location.href.includes('live.html')) {
         live_commentary=document.getElementById("live_commentary");
         live_commentary.classList.toggle("show");
     });
+    
+    document.getElementById("reset_match").addEventListener('click', function(){
+        window.location.href = "setup.html";
+    });
 
     function update_display() {
         document.getElementById('current_bowler').innerHTML = `Current Bowler: &nbsp${bowler}`;

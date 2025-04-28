@@ -7,7 +7,13 @@ body {
     padding: 20px 20px;
 }
 
-#go_to_scorecard {
+#button_div {
+    display: flex;
+    flex-direction: row;
+}
+
+#go_to_scorecard,
+#reset_match {
     display: block;
     background-color : #009270;
     color: white;
@@ -20,7 +26,12 @@ body {
     transition: background 0.2s ease;
 }
 
-#go_to_scorecard:hover {
+#reset_match{
+    margin-left: 50px
+}
+
+#go_to_scorecard:hover,
+#reset_match:hover {
     background-color: #007c5e;
 }
 
