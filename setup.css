@@ -8,7 +8,7 @@ body {
     color: #333;
 }
 
-div {
+#form_div {
     max-width: 500px;
     margin: 80px auto;
     background-color: #ffffff;
@@ -65,4 +65,11 @@ button:hover {
 #title_image {
     width: 150px;
     padding-left: 175px;
+}
+
+#start_match {
+    display: block;
+    margin: 30px auto;
+    font-size: 16px;
+    
 }

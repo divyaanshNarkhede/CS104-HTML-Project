@@ -6,9 +6,9 @@
 
 </head>
 <body>
-    <div>
+    <div id="form_div">
         <img id="title_image" src="images/Howzatt.png" alt="Howzatt! Cricket Scorekeeper">
-        <form>
+        <form id="setup_form">
             <label for="team1">Please enter the name of Team 1 :</label>
             <input type="text" id="team1">
             <br>
@@ -34,7 +34,9 @@
                 <option value="bowl">Bowl</option>
             </select>
             <br>
-            <button type="submit" id="start_match">Start Match</button>
+            <div>
+                <button type="submit" id="start_match">Start Match</button>
+            </div>
         </form>
     </div>
     <script src="score.js"></script>

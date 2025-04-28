@@ -188,7 +188,7 @@ if (window.location.href.includes('live.html')) {
     document.getElementById('no_ball').addEventListener('click', function() {
         wide=true;
         no_ball=true;
-        run=parseInt(prompt("How many runs in no ball :")) || 0;
+        run=parseInt(prompt("How many runs made in the No Ball :")) || 0;
         setTimeout(() => {
             if (total_inning == 1) { handle_inning_1(); }
             else if (total_inning == 2) { handle_inning_2(); handle_win(); }
@@ -736,28 +736,28 @@ if (window.location.href.includes('live.html')) {
         live_commentary=document.getElementById("live_commentary");
         const over_count = (Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1);
         if (!wicket && wide && !no_ball && !byes) {
-            live_commentary.innerHTML += `<span class="overs_display">${over_count}</span> ${bowler} <span class="regular">to</span> ${strike_batter}<span class="regular">,</span> Wide (+1 extra)<br>`;
+            live_commentary.innerHTML = `<span class="overs_display">${over_count}</span> ${bowler} <span class="regular">to</span> ${strike_batter}<span class="regular">,</span> Wide (+1 extra)<br>` + live_commentary.innerHTML;
         }
         else if(!wicket && !wide && !no_ball && !free_hit && !byes){
-            live_commentary.innerHTML += `<span class="overs_display">${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)}</span> ${bowler} <span class="regular">to</span> ${prev_batter}<span class="regular">,</span> ${run} runs  &#127951;<br>`;
+            live_commentary.innerHTML = `<span class="overs_display">${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)}</span> ${bowler} <span class="regular">to</span> ${prev_batter}<span class="regular">,</span> ${run} runs  &#127951;<br>` + live_commentary.innerHTML;
         }
         else if(wicket && !wide && !no_ball && !free_hit && !byes){
-            live_commentary.innerHTML += `<span class="overs_display">${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)}</span> ${bowler} <span class="regular">to</span> ${prev_batter}<span class="regular">,</span> Wicket   &#129358;<br>`;
-            document.getElementById("last_wicket").innerHTML = `<p>Last Wicket : ${prev_batter} <i>b</i> ${bowler} ${batters[prev_batter].runs}(${batters[prev_batter].balls})&nbsp-&nbsp${total_runs}/${total_wickets} in ${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)} overs`;
+            live_commentary.innerHTML = `<span class="overs_display">${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)}</span> ${bowler} <span class="regular">to</span> ${prev_batter}<span class="regular">,</span> Wicket   &#129358;<br>`;
+            document.getElementById("last_wicket").innerHTML = `<p>Last Wicket : ${prev_batter} <i>b</i> ${bowler} ${batters[prev_batter].runs}(${batters[prev_batter].balls})&nbsp-&nbsp${total_runs}/${total_wickets} in ${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)} overs` + live_commentary.innerHTML;
         }
         else if(!wicket && wide && no_ball && !byes){
-            live_commentary.innerHTML += `<span class="overs_display">${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)}</span> ${bowler} <span class="regular">to</span> ${prev_batter}<span class="regular">,</span> No Ball ${run} runs (+1 extra)<br>`;
+            live_commentary.innerHTML = `<span class="overs_display">${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)}</span> ${bowler} <span class="regular">to</span> ${prev_batter}<span class="regular">,</span> No Ball ${run} runs (+1 extra)<br>` + live_commentary.innerHTML;
         }
         else if(!wicket && free_hit && !byes){
-            live_commentary.innerHTML += `<span class="overs_display">${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)}</span> ${bowler} <span class="regular">to</span> ${prev_batter}<span class="regular">,</span> ${run} runs (Free Hit)<br>`;
+            live_commentary.innerHTML = `<span class="overs_display">${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)}</span> ${bowler} <span class="regular">to</span> ${prev_batter}<span class="regular">,</span> ${run} runs (Free Hit)<br>` + live_commentary.innerHTML;
             free_hit=false;
         }
         else if(!wicket && !wide && !no_ball && !free_hit && byes){
-            live_commentary.innerHTML += `<span class="overs_display">${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)}</span> ${bowler} <span class="regular">to</span> ${prev_batter}<span class="regular">,</span> ${run} runs (Byes)  &#127951;<br>`;
+            live_commentary.innerHTML = `<span class="overs_display">${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)}</span> ${bowler} <span class="regular">to</span> ${prev_batter}<span class="regular">,</span> ${run} runs (Byes)  &#127951;<br>` + live_commentary.innerHTML;
             byes=false;
         }
         else if(!wicket && !wide && !no_ball && free_hit && byes){
-            live_commentary.innerHTML += `<span class="overs_display">${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)}</span> ${bowler} <span class="regular">to</span> ${prev_batter}<span class="regular">,</span> ${run} runs (Byes) (Free Hit)  &#127951;<br>`;
+            live_commentary.innerHTML = `<span class="overs_display">${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)}</span> ${bowler} <span class="regular">to</span> ${prev_batter}<span class="regular">,</span> ${run} runs (Byes) (Free Hit)  &#127951;<br>` + live_commentary.innerHTML;
             free_hit=false;
             document.getElementById("wicket").style.display = "inline";
         }

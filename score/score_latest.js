@@ -7,7 +7,13 @@ if (window.location.href.includes('setup.html')) {
         let team1_name_out = document.getElementById('team1').value;
         let team2_name_out = document.getElementById('team2').value;
         let toss_winner_out = document.getElementById('toss_winner').value;
+        if(toss_winner_out != "team1" && toss_winner_out != "team2") {
+            toss_winner_out=null;
+        }
         let toss_decision_out = document.getElementById('toss_decision').value;
+        if(toss_decision_out != "bat" && toss_decision_out != "bowl") {
+            toss_decision_out=null;
+        }
         let OVERS = parseInt(document.getElementById('num_overs').value) || 2;
 
         if (!team1_name_out || !team2_name_out || !toss_winner_out || !toss_decision_out) {
@@ -23,6 +29,9 @@ if (window.location.href.includes('setup.html')) {
 }
 
 if (window.location.href.includes('live.html')) {
+    document.addEventListener("DOMContentLoaded", function() {
+        document.body.style.zoom = "85%";
+    });
     let valuesin = new URLSearchParams(window.location.search);
     let team1_name = valuesin.get('team1');
     let team2_name = valuesin.get('team2');
@@ -59,6 +68,7 @@ if (window.location.href.includes('live.html')) {
     let wide=false;
     let prev_wide=false;
     let wicket = false;
+    let byes=false;
     let no_ball=false;
     let free_hit=false;
     let type=null;
@@ -89,8 +99,10 @@ if (window.location.href.includes('live.html')) {
         required_runs=state.required_runs;
         wide=state.wide;
         prev_wide=state.prev_wide;
-        free_hit=state.free_hit
+        free_hit=state.free_hit;
+        byes=state.byes;
         document.getElementById("live_commentary").innerHTML = state.commentary_content || "";
+        document.getElementById("last_wicket").innerHTML = state.last_wicket || "";
         update_display();
         update_score_display();
     }
@@ -154,6 +166,17 @@ if (window.location.href.includes('live.html')) {
         }, 1200);
         run=0;
     });
+    document.getElementById('byes').addEventListener('click', function() {
+        byes=true;
+        run=parseInt(prompt("How many runs in byes :")) || 0;
+        setTimeout(() => {
+            if (total_inning == 1) { handle_inning_1(); }
+            else if (total_inning == 2) { handle_inning_2(); handle_win(); }
+            byes=false;
+            run=0;
+            wicket=0;
+        },100);
+    });
     document.getElementById('wide').addEventListener('click', function() {
         wide=true;
         if (total_inning == 1) { handle_inning_1(); }
@@ -165,7 +188,7 @@ if (window.location.href.includes('live.html')) {
     document.getElementById('no_ball').addEventListener('click', function() {
         wide=true;
         no_ball=true;
-        run=parseInt(prompt("How many runs in no ball :")) || 0;
+        run=parseInt(prompt("How many runs made in the No Ball :")) || 0;
         setTimeout(() => {
             if (total_inning == 1) { handle_inning_1(); }
             else if (total_inning == 2) { handle_inning_2(); handle_win(); }
@@ -190,16 +213,18 @@ if (window.location.href.includes('live.html')) {
     });
 
     function update_display() {
-        document.getElementById('current_bowler').innerText = `Current Bowler: ${bowler}`;
-        document.getElementById('strike_batter').innerText = `Strike Batter: ${strike_batter}`;
-        document.getElementById('non_strike_batter').innerText = `Non-Strike Batter: ${non_strike_batter}`;
+        document.getElementById('current_bowler').innerHTML = `Current Bowler: &nbsp${bowler}`;
+        document.getElementById('strike_batter').innerHTML = `Strike Batter: &nbsp${strike_batter}`;
+        document.getElementById('non_strike_batter').innerHTML = `Non-Strike Batter: &nbsp${non_strike_batter}`;
     }
 
-    function update_batter_stats(name, runs_scored, is_out = false,newb=false,extra_balls=0,no_ball=false) {
+    function update_batter_stats(name, runs_scored, is_out = false,newb=false,extra_balls=0,no_ball=false,byes=false) {
         if (!batters[name]) {
             batters[name] = { runs: 0, balls: 0, fours: 0, sixes: 0, out: false, newb: true, extras: 0, inning: 0,};
         }
-        batters[name].runs += runs_scored;
+        if(!byes) {
+            batters[name].runs += runs_scored;
+        }
         if(!batters[name].newb){
             if(extra_balls==0) {
                 batters[name].balls += 1;
@@ -213,6 +238,7 @@ if (window.location.href.includes('live.html')) {
         if (runs_scored === 6) batters[name].sixes += 1;
         if (is_out) batters[name].out = true;
         if(extra_balls!=0) {batters[name].extras+=extra_balls;}
+        else if(byes) {batters[name].extras+=runs_scored;}
         batters[name].inning=total_inning;
     }
 
@@ -281,10 +307,73 @@ if (window.location.href.includes('live.html')) {
                 document.getElementById('overall_scores').innerText = `${team1_name} ${total_runs}/${total_wickets} (${Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10}) vs. ${team2_name} ${required_runs - 1}/${prev_wickets} (${OVERS}.0)`;
             }
         }
+        let batting_table_current = document.getElementById("batting_table_current");
+        batting_table_current.innerHTML = `
+        <thead>
+        <tr>
+            <th>Player</th><th>Runs</th><th>Balls</th><th>4s</th><th>6s</th><th>Strike Rate</th> <th>Extras</th> <th>Status</th>
+        </tr>
+        </thead>
+        `;
+        if (batters[strike_batter]) {
+            const stats = batters[strike_batter];
+            const row = document.createElement("tr");
+            let strike_rate = stats.balls > 0 ? ((stats.runs / stats.balls) * 100).toFixed(2) : 0;
+            row.innerHTML = `
+            <td>${strike_batter} (Strike)</td>
+            <td>${stats.runs}</td>
+            <td>${stats.balls}</td>
+            <td>${stats.fours}</td>
+            <td>${stats.sixes}</td>
+            <td>${strike_rate}</td>
+            <td>${stats.extras}</td>
+            <td>${stats.out ? 'Out' : 'Not Out'}</td>
+            `;
+            batting_table_current.appendChild(row);
+        }
+        if (batters[non_strike_batter]) {
+            const stats = batters[non_strike_batter];
+            const row = document.createElement("tr");
+            let strike_rate = stats.balls > 0 ? ((stats.runs / stats.balls) * 100).toFixed(2) : 0;
+            row.innerHTML = `
+            <td>${non_strike_batter} (Non-Strike)</td>
+            <td>${stats.runs}</td>
+            <td>${stats.balls}</td>
+            <td>${stats.fours}</td>
+            <td>${stats.sixes}</td>
+            <td>${strike_rate}</td>
+            <td>${stats.extras}</td>
+            <td>${stats.out ? 'Out' : 'Not Out'}</td>
+            `;
+            batting_table_current.appendChild(row);
+        }
+        let bowling_table_current = document.getElementById("bowling_table_current");
+        bowling_table_current.innerHTML = `
+        <thead>
+        <tr>
+            <th>Bowler</th><th>Overs</th><th>Runs Conceded</th><th>Wickets</th><th>Maidens</th><th>Economy</th>
+        </tr>
+        </thead>`;
+        if (bowlers[bowler]) {
+            const stats = bowlers[bowler];
+            const row = document.createElement("tr");
+            const overs = `${Math.floor(stats.balls / 6)}.${stats.balls % 6}`;
+            const economy = stats.balls > 0 ? (stats.runs / (stats.balls / 6)).toFixed(2) : 0;
+            row.innerHTML = `
+                <td>${bowler}</td>
+                <td>${overs}</td>
+                <td>${stats.runs}</td>
+                <td>${stats.wickets}</td>
+                <td>${stats.maidens}</td>
+                <td>${economy}</td>
+            `;
+            bowling_table_current.appendChild(row);
+        }
     }
 
     function save_match_state() {
         const commentary_content = document.getElementById("live_commentary").innerHTML;
+        const last_wicket = document.getElementById("last_wicket").innerHTML;
         localStorage.setItem("match_state", JSON.stringify({
             total_runs,
             total_wickets,
@@ -301,14 +390,16 @@ if (window.location.href.includes('live.html')) {
             commentary_content,
             wide,
             prev_wide,
-            free_hit
+            free_hit,
+            last_wicket,
+            byes
         }));
     }
 
 
 
     function handle_balls() {
-        if (wide && !no_ball && !free_hit) {
+        if (wide && !no_ball && !free_hit && !byes) {
             if(!prev_wide) balls_bowled++;
             prev_wide=true;
             total_runs += 1; // Only add 1 run for wide
@@ -322,7 +413,7 @@ if (window.location.href.includes('live.html')) {
             wide=false;
             return; // Skip the rest of the ball handling
         }
-        else if (wide && no_ball && !free_hit) {
+        else if (wide && no_ball && !free_hit &&!byes) {
             if(!prev_wide) balls_bowled++;
             prev_wide=true;
             total_runs += run+1; // Only add 1 run for wide
@@ -345,7 +436,7 @@ if (window.location.href.includes('live.html')) {
             wide=false;
             return; // Skip the rest of the ball handling
         }
-        else if(free_hit) {
+        else if(free_hit && !byes) {
             if (wide && !no_ball) {
                 if(!prev_wide) balls_bowled++;
                 prev_wide=true;
@@ -415,7 +506,37 @@ if (window.location.href.includes('live.html')) {
                 document.getElementById("wicket").style.display="inline";
             }
         }
-        else if(!wide & !wicket){
+        else if(!wide && !wicket && byes ){
+            if(!prev_wide) balls_bowled++;
+            total_runs += run;
+            
+            update_batter_stats(strike_batter, run, wicket,false,0,false,true);
+            update_bowler_stats(bowler, 0, wicket);
+    
+            prev_batter=strike_batter;
+            if (run % 2 == 1) {
+                let temp = strike_batter;
+                strike_batter = non_strike_batter;
+                non_strike_batter = temp;
+            }
+            if (balls_bowled % 6 == 0 && balls_bowled !== 6 * OVERS) {
+                update_display();
+                setTimeout(() => {
+                    if (total_inning == 1) {
+                        bowler = prompt("Enter the name of the next bowler:") || "Bowler " + (Math.floor(balls_bowled / 6) + 1);
+                    } 
+                    else if (total_inning == 2) {
+                        bowler = prompt("Enter the name of the next bowler:") || "Bowler2 " + (Math.floor(balls_bowled / 6) + 1);
+                    }
+                    let temp = strike_batter;
+                    strike_batter = non_strike_batter;
+                    non_strike_batter = temp;
+                    update_display();
+                }, 100);
+            }
+            prev_wide=false;
+        }
+        else if(!wide && !wicket && !byes){
                 if(!prev_wide) balls_bowled++;
                 total_runs += run;
                 
@@ -445,7 +566,7 @@ if (window.location.href.includes('live.html')) {
                 }
                 prev_wide=false;
             }
-        else if (!wide & wicket) {
+        else if (!wide && wicket && !byes) {
             if(!prev_wide) balls_bowled++;
             total_wickets++;
             update_batter_stats(strike_batter, run, wicket);
@@ -517,6 +638,7 @@ if (window.location.href.includes('live.html')) {
             setTimeout(() => {
                 live_commentary=document.getElementById("live_commentary");
                 live_commentary.innerHTML += `---- Inning 1 End ----<br>`;
+                document.getElementById("last_wicket").innerHTML = ``;
             },100);
             balls_bowled=0;
             return;
@@ -613,21 +735,31 @@ if (window.location.href.includes('live.html')) {
         // console.log(balls_bowled);
         live_commentary=document.getElementById("live_commentary");
         const over_count = (Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1);
-        if (!wicket && wide && !no_ball) {
-            live_commentary.innerHTML += `<span class="overs_display">${over_count}</span> ${bowler} <span class="regular">to</span> ${strike_batter}<span class="regular">,</span> Wide (+1 extra)<br>`;
+        if (!wicket && wide && !no_ball && !byes) {
+            live_commentary.innerHTML = `<span class="overs_display">${over_count}</span> ${bowler} <span class="regular">to</span> ${strike_batter}<span class="regular">,</span> Wide (+1 extra)<br>` + live_commentary.innerHTML;
         }
-        else if(!wicket && !wide && !no_ball && !free_hit){
-            live_commentary.innerHTML += `<span class="overs_display">${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)}</span> ${bowler} <span class="regular">to</span> ${prev_batter}<span class="regular">,</span> ${run} runs  &#127951;<br>`;
+        else if(!wicket && !wide && !no_ball && !free_hit && !byes){
+            live_commentary.innerHTML = `<span class="overs_display">${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)}</span> ${bowler} <span class="regular">to</span> ${prev_batter}<span class="regular">,</span> ${run} runs  &#127951;<br>` + live_commentary.innerHTML;
         }
-        else if(wicket && !wide && !no_ball && !free_hit){
-            live_commentary.innerHTML += `<span class="overs_display">${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)}</span> ${bowler} <span class="regular">to</span> ${prev_batter}<span class="regular">,</span> Wicket   &#129358;<br>`;
+        else if(wicket && !wide && !no_ball && !free_hit && !byes){
+            live_commentary.innerHTML = `<span class="overs_display">${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)}</span> ${bowler} <span class="regular">to</span> ${prev_batter}<span class="regular">,</span> Wicket   &#129358;<br>`;
+            document.getElementById("last_wicket").innerHTML = `<p>Last Wicket : ${prev_batter} <i>b</i> ${bowler} ${batters[prev_batter].runs}(${batters[prev_batter].balls})&nbsp-&nbsp${total_runs}/${total_wickets} in ${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)} overs` + live_commentary.innerHTML;
         }
-        else if(!wicket && wide && no_ball){
-            live_commentary.innerHTML += `<span class="overs_display">${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)}</span> ${bowler} <span class="regular">to</span> ${prev_batter}<span class="regular">,</span> No Ball ${run} runs (+1 extra)<br>`;
+        else if(!wicket && wide && no_ball && !byes){
+            live_commentary.innerHTML = `<span class="overs_display">${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)}</span> ${bowler} <span class="regular">to</span> ${prev_batter}<span class="regular">,</span> No Ball ${run} runs (+1 extra)<br>` + live_commentary.innerHTML;
         }
-        else if(!wicket && free_hit){
-            live_commentary.innerHTML += `<span class="overs_display">${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)}</span> ${bowler} <span class="regular">to</span> ${prev_batter}<span class="regular">,</span> ${run} runs (Free Hit)<br>`;
+        else if(!wicket && free_hit && !byes){
+            live_commentary.innerHTML = `<span class="overs_display">${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)}</span> ${bowler} <span class="regular">to</span> ${prev_batter}<span class="regular">,</span> ${run} runs (Free Hit)<br>` + live_commentary.innerHTML;
             free_hit=false;
+        }
+        else if(!wicket && !wide && !no_ball && !free_hit && byes){
+            live_commentary.innerHTML = `<span class="overs_display">${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)}</span> ${bowler} <span class="regular">to</span> ${prev_batter}<span class="regular">,</span> ${run} runs (Byes)  &#127951;<br>` + live_commentary.innerHTML;
+            byes=false;
+        }
+        else if(!wicket && !wide && !no_ball && free_hit && byes){
+            live_commentary.innerHTML = `<span class="overs_display">${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)}</span> ${bowler} <span class="regular">to</span> ${prev_batter}<span class="regular">,</span> ${run} runs (Byes) (Free Hit)  &#127951;<br>` + live_commentary.innerHTML;
+            free_hit=false;
+            document.getElementById("wicket").style.display = "inline";
         }
         // else if(!wicket && wide){
         //     live_commentary.innerHTML += `<span class="overs_display">${(Math.floor(balls_bowled / 6) + (balls_bowled % 6) / 10).toFixed(1)}</span> ${bowler} <span class="regular">to</span> ${strike_batter}<span class="regular">,</span> Wide<br>`;
@@ -738,10 +870,10 @@ if (window.location.href.includes("summary.html")) {
         let req_wickets=10-total_wickets;
         const balls_bowled=matchState?.balls_bowled;
         let req_balls=6*OVERS-balls_bowled;
-        document.getElementById("win").innerHTML=`<span class="win_imp">${won_team}</span> wins by <span class="win_imp">${req_wickets}</span> wickets ! ( <span class="wim+imp">${req_balls}</span> balls left )`;
+        document.getElementById("win").innerHTML=`<span class="win_imp">${won_team}</span> wins by <span class="win_imp">${req_wickets}</span> wickets! ( <span class="wim+imp">${req_balls}</span> balls left )`;
     }
     else if(type==3) {
-        document.getElementById("win").innerHTML=`Match end in a tie`;
+        document.getElementById("win").innerHTML=`Match ends in a <span class="win_imp">tie</span>`;
     }
 
     document.getElementById("go_to_scorecard_from_summary").addEventListener('click', function(){
