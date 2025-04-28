@@ -127,7 +127,7 @@ button[id^="run_"]:hover {
     font-weight: 500;
     padding: 8px 14px;
     margin : 5px 4px;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
 }
@@ -145,7 +145,7 @@ button[id^="run_"]:hover {
 
 #four_image,
 #six_image,
-#out_image {
+#wicket_image {
     display: none;
     padding-left: 50px;
     width: 70px;

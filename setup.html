@@ -27,12 +27,15 @@
                 <option value="team2">Team 2</option>
             </select>
             <br>
-            <label for="toss_decision">Toss Decision</label>
-            <select id="toss_decision" required>
-                <option>-- Toss Decision --</option>
-                <option value="bat">Bat</option>
-                <option value="bowl">Bowl</option>
-            </select>
+            <label for="toss_decision">Toss Decision :</label>
+            <div id="toss_div">
+                <select id="toss_decision" required>
+                    <option>-- Toss Decision --</option>
+                    <option value="bat">Bat</option>
+                    <option value="bowl">Bowl</option>
+                </select>
+                <img id="toss_image" src="images/toss.gif" alt="Toss Animation">
+            </div>
             <br>
             <div>
                 <button type="submit" id="start_match">Start Match</button>

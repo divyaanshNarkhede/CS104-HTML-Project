@@ -73,3 +73,19 @@ button:hover {
     font-size: 16px;
     
 }
+
+#toss_div{
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+}
+
+#toss_image{
+    width: 25px;
+    padding-left: 5px;
+}
+
+#toss_decision{
+    padding: 12px;
+    max-height: 42px;
+}
