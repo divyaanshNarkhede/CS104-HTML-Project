@@ -1,5 +1,5 @@
 if (window.location.href.includes('setup.html')) {
-    
+
     document.getElementById('start_match').addEventListener('click', function(event) {
         event.preventDefault();
         let team1_name_out = document.getElementById('team1').value;
@@ -238,7 +238,10 @@ if (window.location.href.includes('live.html')) {
         if(!byes) {
             batters[name].runs += runs_scored;
         }
-        if(!batters[name].newb){
+        else {
+            batters[name].extras += runs_scored;
+        }
+        if(!batters[name].newb && !byes){
             if(extra_balls==0) {
                 batters[name].balls += 1;
             }
@@ -251,7 +254,6 @@ if (window.location.href.includes('live.html')) {
         if (runs_scored === 6) batters[name].sixes += 1;
         if (is_out) batters[name].out = true;
         if(extra_balls!=0) {batters[name].extras+=extra_balls;}
-        else if(byes) {batters[name].extras+=runs_scored;}
         batters[name].inning=total_inning;
     }
 
@@ -392,6 +394,7 @@ if (window.location.href.includes('live.html')) {
         </tr>
         </thead>
         `;
+        // Populate current batter table in live.html
         if (batters[strike_batter]) {
             const stats = batters[strike_batter];
             const row = document.createElement("tr");
@@ -408,6 +411,7 @@ if (window.location.href.includes('live.html')) {
             `;
             batting_table_current.appendChild(row);
         }
+        // Populate current bowling table in live.html
         if (batters[non_strike_batter]) {
             const stats = batters[non_strike_batter];
             const row = document.createElement("tr");
@@ -449,6 +453,7 @@ if (window.location.href.includes('live.html')) {
     }
 
     function handle_balls() {
+        // Handle wide
         if (wide && !no_ball && !free_hit && !byes) {
             if(!prev_wide) balls_bowled++;
             prev_wide=true;
@@ -463,6 +468,7 @@ if (window.location.href.includes('live.html')) {
             wide=false;
             return;
         }
+        // Handle no ball
         else if (wide && no_ball && !free_hit &&!byes) {
             if(!prev_wide) balls_bowled++;
             prev_wide=true;
@@ -484,6 +490,7 @@ if (window.location.href.includes('live.html')) {
             wide=false;
             return;
         }
+        // Handle free hit after no ball
         else if(free_hit && !byes) {
             if (wide && !no_ball) {
                 if(!prev_wide) balls_bowled++;
@@ -500,6 +507,7 @@ if (window.location.href.includes('live.html')) {
                 wide=false;
                 return;
             }
+            // Handle wide or no ball in free hit condition
             else if (wide && no_ball) {
                 if(!prev_wide) balls_bowled++;
                 prev_wide=true;
@@ -520,6 +528,7 @@ if (window.location.href.includes('live.html')) {
                 wide=false;
                 return;
             }
+            // Handle other inputs in free hit condiiton
             else {
                 if(!prev_wide) balls_bowled++;
                 total_runs += run;
@@ -540,14 +549,17 @@ if (window.location.href.includes('live.html')) {
                         else if (total_inning == 2) {
                             bowler = prompt("Enter the name of the next bowler:") || "Bowler2 " + (Math.floor(balls_bowled / 6) + 1);
                         }
+                        update_bowler_stats(bowler,0,0,0,true);
                         swap_strike();
                         update_display();
+                        update_score_display();
                     }, 100);
                 }
                 prev_wide=false;
                 document.getElementById("wicket").style.display="inline";
             }
         }
+        // Handle byes
         else if(!wide && !wicket && byes ){
             if(!prev_wide) balls_bowled++;
             total_runs += run;
@@ -568,12 +580,15 @@ if (window.location.href.includes('live.html')) {
                     else if (total_inning == 2) {
                         bowler = prompt("Enter the name of the next bowler:") || "Bowler2 " + (Math.floor(balls_bowled / 6) + 1);
                     }
+                    update_bowler_stats(bowler,0,0,0,true);
                     swap_strike();
                     update_display();
+                    update_score_display();
                 }, 100);
             }
             prev_wide=false;
         }
+        // Handle normal runs
         else if(!wide && !wicket && !byes){
                 if(!prev_wide) balls_bowled++;
                 total_runs += run;
@@ -594,12 +609,15 @@ if (window.location.href.includes('live.html')) {
                         else if (total_inning == 2) {
                             bowler = prompt("Enter the name of the next bowler:") || "Bowler2 " + (Math.floor(balls_bowled / 6) + 1);
                         }
+                        update_bowler_stats(bowler,0,0,0,true);
                         swap_strike();
                         update_display();
+                        update_score_display();
                     }, 100);
                 }
                 prev_wide=false;
-            }
+        }
+        // Handle wicket
         else if (!wide && wicket && !byes) {
             if(!prev_wide) balls_bowled++;
             total_wickets++;
@@ -631,8 +649,10 @@ if (window.location.href.includes('live.html')) {
                     else if (total_inning == 2) {
                         bowler = prompt("Enter the name of the next bowler:") || "Bowler2 " + (Math.floor(balls_bowled / 6) + 1);
                     }
+                    update_bowler_stats(bowler,0,0,0,true);
                     swap_strike();
                     update_display();
+                    update_score_display();
                 }, 100);
             }
             prev_wide=false;
@@ -660,8 +680,9 @@ if (window.location.href.includes('live.html')) {
                 non_strike_batter = prompt("Please enter the name of non-strike batter:") || "Player2 2";
                 update_batter_stats(non_strike_batter, 0, 0);
                 bowler = prompt("Please enter the name of bowler:") || "Bowler2 1";
-
+                update_bowler_stats(bowler,0,0,0,true);
                 update_display();
+                update_score_display();
             },100);
             second_innings_started = true;
             save_scorecard_to_storage();
@@ -678,15 +699,17 @@ if (window.location.href.includes('live.html')) {
         }
         
     }
+    // Handles Inning 1 Separately
     function handle_inning_1() {
         if (balls_bowled <= 6 * OVERS && total_wickets < 10 && total_inning == 1) {
             handle_balls();
+            //Update everything
             update_score_display();
             save_match_state();
             save_scorecard_to_storage();
         }
     }
-
+    // Handles Inning 2 separately
     function handle_inning_2() {
         if (balls_bowled <= 6 * OVERS && total_wickets < 10 && total_inning == 2 && total_runs < required_runs) {
             handle_balls();
@@ -703,6 +726,7 @@ if (window.location.href.includes('live.html')) {
     }
 
     function handle_win() {
+        update_score_display();
         type=null;
         if (total_inning != 2) return;
         else {
@@ -711,30 +735,35 @@ if (window.location.href.includes('live.html')) {
 
             setTimeout (() => {
                 if ((balls_bowled == 6 * OVERS && total_runs <= required_runs-2 && !prev_wide) || total_wickets >= 10) {
+                    //FIrst batting team makes more runs
                     won_team = first_batting_team;
                     lose_team = second_batting_team;
                     type = 1;
                     update_display();
                 } 
                 else if (total_runs > required_runs) {
+                    //Second batting team catches up
                     won_team = second_batting_team;
                     lose_team = first_batting_team;
                     type = 2;
                     update_display();
                 } 
                 else if (balls_bowled == 6 * OVERS && total_runs == required_runs-1) {
+                    //Both teams make same number of runs
                     won_team = "tie";
                     type = 3;
                     update_display();
                     
                 }
                 else if((balls_bowled < 6 * OVERS && total_runs >= required_runs && !prev_wide) || total_wickets >= 10) {
+                    //Second batting team catches up in less number of balls
                     won_team = second_batting_team;
                     lose_team = first_batting_team;
                     type = 2;
                     update_display();
                 }
                 if (won_team !== null && type !== null) {
+                    //Handles if no win condition yet
                     update_live_commentary();
                     localStorage.setItem("won_team", won_team);
                     localStorage.setItem("type", type);
@@ -750,9 +779,10 @@ if (window.location.href.includes('live.html')) {
 }
 
 if (window.location.href.includes("scorecard.html")) {
-    const urlParams = new URLSearchParams(window.location.search);
-    const isMatchDone = urlParams.get('done') === 'true';
-    if(isMatchDone) {
+    const url_params = new URLSearchParams(window.location.search);
+    const is_match_done = url_params.get('done') === 'true';
+    //Check if match done to hide back to live button in scorecard.html or hide go to summary.html if match not yet done
+    if(is_match_done) {
         back_to_live = document.getElementById("back_to_live");
         back_to_summary=document.getElementById("back_to_summary");
         if (back_to_live) {
@@ -775,6 +805,7 @@ if (window.location.href.includes("scorecard.html")) {
 
     let batting_table_inning1 = document.getElementById("batting_table_inning1");
     let batting_table_inning2 = document.getElementById("batting_table_inning2");
+    //Populating Batting Table for each inning
     Object.entries(batters_data).forEach(([name, stats]) => {
         const row = document.createElement("tr");
         let strike_rate = (stats.balls>0) ? (stats.runs/stats.balls)*100 : 0;
@@ -784,7 +815,7 @@ if (window.location.href.includes("scorecard.html")) {
         else if(stats.inning==2) {batting_table_inning2.appendChild(row);}
         
     });
-
+    //Populating bowling table for each inning
     let bowling_table_inning1 = document.getElementById("bowling_table_inning1");
     let bowling_table_inning2 = document.getElementById("bowling_table_inning2");
     Object.entries(bowlers_data).forEach(([name, stats]) => {
@@ -804,7 +835,8 @@ if (window.location.href.includes("scorecard.html")) {
     document.getElementById("back_to_summary").addEventListener('click', ()=>{
         window.location.href = "summary.html";
     });
-    
+
+    //Hide inning 2 tables if inning==1
     if(total_inning==1) {
         batting_table_inning2.style.display="none";
         bowling_table_inning2.style.display="none";
@@ -825,12 +857,14 @@ if (window.location.href.includes("summary.html")) {
     let OVERS=localStorage.getItem("OVERS");
     let won_team=localStorage.getItem("won_team");
     let type=localStorage.getItem("type");
+    //Handle type 1 win
     if(type==1) {
         const required_runs = matchState?.required_runs;
         const total_runs = matchState?.total_runs;
         win_runs=required_runs-total_runs-1;
         document.getElementById("win").innerHTML=`<span class="win_imp">${won_team}</span> wins by <span class="win_imp">${win_runs}</span> runs!`;
     }
+    //Handle type 2 win (catch up)
     else if(type==2) {
         const total_wickets = matchState?.total_wickets;
         let req_wickets=10-total_wickets;
@@ -838,6 +872,7 @@ if (window.location.href.includes("summary.html")) {
         let req_balls=6*OVERS-balls_bowled;
         document.getElementById("win").innerHTML=`<span class="win_imp">${won_team}</span> wins by <span class="win_imp">${req_wickets}</span> wickets! ( <span class="wim+imp">${req_balls}</span> balls left )`;
     }
+    //Handle type 3 win (tie)
     else if(type==3) {
         document.getElementById("win").innerHTML=`Match ends in a <span class="win_imp">tie</span>`;
     }

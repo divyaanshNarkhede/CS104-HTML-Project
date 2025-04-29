@@ -109,7 +109,7 @@ if (window.location.href.includes('live.html')) {
         non_strike_batter = prompt("Please enter the name of non-strike batter:") || "Player 2";
         update_batter_stats(non_strike_batter, 0, 0,true);
         bowler = prompt("Please enter the name of bowler:") || "Bowler 1";
-        update_bowler_stats(bowler,0,0,0,true)
+        update_bowler_stats(bowler,0,0,0,true);
     }
     document.getElementById('strike_batter').innerText = `Strike Batter: ${strike_batter}`;
     document.getElementById('non_strike_batter').innerText = `Non-Strike Batter: ${non_strike_batter}`;
@@ -594,8 +594,10 @@ if (window.location.href.includes('live.html')) {
                         else if (total_inning == 2) {
                             bowler = prompt("Enter the name of the next bowler:") || "Bowler2 " + (Math.floor(balls_bowled / 6) + 1);
                         }
+                        update_bowler_stats(bowler,0,0,0,true);
                         swap_strike();
                         update_display();
+                        update_score_display();
                     }, 100);
                 }
                 prev_wide=false;
@@ -631,6 +633,7 @@ if (window.location.href.includes('live.html')) {
                     else if (total_inning == 2) {
                         bowler = prompt("Enter the name of the next bowler:") || "Bowler2 " + (Math.floor(balls_bowled / 6) + 1);
                     }
+                    update_bowler_stats(bowler,0,0,0,true);
                     swap_strike();
                     update_display();
                 }, 100);
@@ -660,6 +663,7 @@ if (window.location.href.includes('live.html')) {
                 non_strike_batter = prompt("Please enter the name of non-strike batter:") || "Player2 2";
                 update_batter_stats(non_strike_batter, 0, 0);
                 bowler = prompt("Please enter the name of bowler:") || "Bowler2 1";
+                update_bowler_stats(bowler,0,0,0,true);
 
                 update_display();
             },100);
