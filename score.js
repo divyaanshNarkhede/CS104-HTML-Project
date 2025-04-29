@@ -265,7 +265,7 @@ if (window.location.href.includes('live.html')) {
         if(!extras && !newb){bowlers[name].balls += 1;}
         bowlers[name].runs += runs_conceded;
         if (took_wicket) bowlers[name].wickets += 1;
-        if (runs_conceded == 0) {
+        if (runs_conceded == 0 && !newb) {
             bowlers[name].maiden_balls += 1;
         } 
         else {
@@ -636,10 +636,6 @@ if (window.location.href.includes('live.html')) {
                     update_batter_stats(strike_batter, 0, 0,true);
                 }
             }
-            // if (balls_bowled % 6 == 0 && !(total_inning == 1 && (balls_bowled >= 6 * OVERS || total_wickets >= 10))) {
-            //     if(total_inning==1) {bowler = prompt("Enter the name of the next bowler:") || "Bowler " + (Math.floor((balls_bowled-1) / 6) + 1);}
-            //     else if(total_inning==2) {bowler = prompt("Enter the name of the next bowler:") || "Bowler2 " + (Math.floor((balls_bowled-1) / 6) + 1);}
-            // }
             if (balls_bowled % 6 == 0 && balls_bowled < 6 * OVERS) {
                 update_display();
                 setTimeout(() => {
